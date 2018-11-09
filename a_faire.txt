@@ -1,0 +1,3 @@
+faire le diagramme UML 
+faire un rapport 
+faire le schema illustrant les principes de communications serveurs
