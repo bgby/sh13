@@ -255,6 +255,7 @@ int main(int argc, char ** argv)
 					sprintf(sendBuffer,"C %s %d %s",gClientIpAddress,gClientPort,gName);
 
 					// RAJOUTER DU CODE ICI
+					sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					connectEnabled=0;
 				}
@@ -284,21 +285,21 @@ int main(int argc, char ** argv)
 					printf("go! joueur=%d objet=%d guilt=%d\n",joueurSel, objetSel, guiltSel);
 					if (guiltSel!=-1)
 					{
-						sprintf(sendBuffer,"G %d %d",gId, guiltSel);
+						sprintf(sendBuffer,"G %d %d",gId, guiltSel);//ON DEMANDE POUR UN COUPABLE
 
 					// RAJOUTER DU CODE ICI
 
 					}
 					else if ((objetSel!=-1) && (joueurSel==-1))
 					{
-						sprintf(sendBuffer,"O %d %d",gId, objetSel);
+						sprintf(sendBuffer,"O %d %d",gId, objetSel);//ON DEMANDE A TOUT LE MONDE QUI A OBJETSEL
 
 					// RAJOUTER DU CODE ICI
 
 					}
 					else if ((objetSel!=-1) && (joueurSel!=-1))
 					{
-						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel,objetSel);
+						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel,objetSel);//ON DEMANDE A UN JOUEUR COMBIEN IL A D'OBJET SEL
 
 					// RAJOUTER DU CODE ICI
 
@@ -326,22 +327,28 @@ int main(int argc, char ** argv)
 			// Message 'I' : le joueur recoit son Id
 			case 'I':
 				// RAJOUTER DU CODE ICI
+				sscanf(gbuffer, "I %d", &gId);
 
 				break;
 			// Message 'L' : le joueur recoit la liste des joueurs
 			case 'L':
 				// RAJOUTER DU CODE ICI
+				sscanf(gbuffer, "L %s %s %s %s", gNames[0], gNames[1], gNames[2], gNames[3]);
 
 				break;
 			// Message 'D' : le joueur recoit ses trois cartes
 			case 'D':
 				// RAJOUTER DU CODE ICI
+				sscanf(gbuffer, "D %d %d %d", b, b+1, b+2);
 
 				break;
 			// Message 'M' : le joueur recoit le n° du joueur courant
 			// Cela permet d'affecter goEnabled pour autoriser l'affichage du bouton go
 			case 'M':
 				// RAJOUTER DU CODE ICI
+				sscanf(gbuffer, "M %d", &id);
+				if(gId == id)
+					goEnabled = 1;
 
 				break;
 			// Message 'V' : le joueur recoit une valeur de tableCartes
