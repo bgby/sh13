@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
 		switch (buffer[0])
 		{
             case 'G'://ON DEMANDE POUR UN COUPABLE
-				sscanf(buffer, "G %d %d", &id, guiltSel)
+				sscanf(buffer, "G %d %d", &id, &guiltSel);
                 if(guiltSel == deck[12]){
                     winner = id;
                 }
