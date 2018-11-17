@@ -218,7 +218,11 @@ int main(int argc, char *argv[])
      char buffer[256];
      struct sockaddr_in serv_addr, cli_addr;
      int n;
-	int i;
+     int i;
+     int joueurSel;
+     int objetSel;
+     int guiltSel;
+     int winner = -1;
 
         char com;
         char clientIpAddress[256], clientName[256];
@@ -329,7 +333,7 @@ int main(int argc, char *argv[])
                     sendMessageToClient(tcpClients[3].ipAddress, tcpClients[3].port, reply);
 
 					// On envoie enfin un message a tout le monde pour definir qui est le joueur courant=0
-                    sprintf(reply, "M %d", 0);
+                    sprintf(reply, "M %d", joueurCourant);
                     broadcastMessage(reply);
 
                                         fsmServer=1;
@@ -341,17 +345,23 @@ int main(int argc, char *argv[])
 	{
 		switch (buffer[0])
 		{
-                	case 'G':
+            case 'G'://ON DEMANDE POUR UN COUPABLE
+				sscanf(buffer, "G %d %d", &id, guiltSel)
+                if(guiltSel == deck[12]){
+                    winner = id;
+                }
+				break;
+
+            case 'O':
 				// RAJOUTER DU CODE ICI
 				break;
-                	case 'O':
-				// RAJOUTER DU CODE ICI
-				break;
+
 			case 'S':
 				// RAJOUTER DU CODE ICI
 				break;
-                	default:
-                        	break;
+            
+            default:
+                break;
 		}
         }
      	close(newsockfd);
