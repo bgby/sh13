@@ -27,6 +27,7 @@ char *nomcartes[]=
   "inspector Hopkins", "Sherlock Holmes", "John Watson", "Mycroft Holmes",
   "Mrs. Hudson", "Mary Morstan", "James Moriarty"};
 int joueurCourant;
+int tabJoueurCourant[4] = {1, 1, 1, 1};
 
 void error(const char *msg)
 {
@@ -223,6 +224,7 @@ int main(int argc, char *argv[])
     int objetSel;
     int guiltSel;
     int winner = -1;
+    int sum = 0;
 
     char com;
     char clientIpAddress[256], clientName[256];
@@ -279,7 +281,7 @@ int main(int argc, char *argv[])
         printf("Received packet from %s:%d\nData: [%s]\n\n",
                 inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);
 
-        if (fsmServer==0)
+        if (fsmServer==0)//debut de partie
         {
         	switch (buffer[0])
         	{
@@ -342,7 +344,7 @@ int main(int argc, char *argv[])
 				break;
                 }
 	}
-	else if (fsmServer==1)
+	else if (fsmServer==1)//en cours de partie
 	{
 		switch (buffer[0])
 		{
@@ -350,28 +352,67 @@ int main(int argc, char *argv[])
 				sscanf(buffer, "G %d %d", &id, &guiltSel);
                 if(guiltSel == deck[12]){
                     winner = id;
+                    fsmServer = 2;
                 }
                 else{
-                    //ELIMINER LE JOUEUR
+                    tabJoueurCourant[id] = 0;
                 }
 				break;
 
             case 'O':
 				// RAJOUTER DU CODE ICI
                 sscanf(buffer, "O %d %d", &id, &objetSel);
-
-
+                for(i = 0; i < 4; i++){
+                    if(i != id){
+                        if(tableCartes[i][objetSel]>0){
+                            sprintf(reply, "V %d %d 100", i, objetSel);
+                        }
+                        else{
+                            sprintf(reply, "V %d %d 0", i, objetSel);
+                        }
+                        broadcastMessage(reply);
+                    }
+                }
 				break;
 
 			case 'S':
 				// RAJOUTER DU CODE ICI
-                sscanf(buffer, "O %d %d %d", &id, &joueurSel, &objetSel);
+                sscanf(buffer, "S %d %d %d", &id, &joueurSel, &objetSel);
                 sprintf(reply, "V %d %d %d", joueurSel, objetSel, tableCartes[joueurSel][objetSel]);
+                broadcastMessage(reply);
 				break;
             
             default:
                 break;
 		}
+
+        //Verification qu'il n'y ait pas 3 perdants
+        sum = 0;
+        for(i = 0; i < 4; i++)
+            sum += tabJoueurCourant[i];
+        if(sum == 1)
+            for(i = 0; i < 4; i++)
+                if(tabJoueurCourant[i] == 1){
+                    winner = i;
+                    fsmServer = 2;
+                }
+
+        //Systeme de definition du joueur courant
+        do{
+            joueurCourant++;
+            if(joueurCourant > 3)
+                joueurCourant = 0;
+        }while(tabJoueurCourant[joueurCourant] == 0);
+        printf("Joueur courant: %d\n", joueurCourant);
+
+        if(fsmServer == 1){
+            sprintf(reply,"M %d", joueurCourant);
+            broadcastMessage(reply);
+        }
+        }
+        else if(fsmServer == 2){//fin de partie
+            sprintf(reply, "W %d", winner);
+            broadcastMessage(reply);
         }
      	close(newsockfd);
      }

@@ -28,6 +28,7 @@ int tableCartes[4][8];
 int b[3];
 int goEnabled;
 int connectEnabled;
+int obj;
 int nbObj;
 
 char *nbobjets[]={"5","5","5","5","4","3","3","3"};
@@ -147,7 +148,9 @@ int main(int argc, char ** argv)
 	int mx,my;
 	char sendBuffer[256];
 	char lname[256];
+	char windowName[256];
 	int id;
+	int winner = -1;
 
         if (argc<6)
         {
@@ -163,8 +166,9 @@ int main(int argc, char ** argv)
 
     SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
- 
-    SDL_Window * window = SDL_CreateWindow("SDL2 SH13",
+
+ 	sprintf(windowName, "SDL2 SH13 [%s]", argv[5]);
+    SDL_Window * window = SDL_CreateWindow(windowName,
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, 0);
  
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
@@ -284,6 +288,7 @@ int main(int argc, char ** argv)
 				else if ((mx>=500) && (mx<700) && (my>=350) && (my<450) && (goEnabled==1))
 				{
 					printf("go! joueur=%d objet=%d guilt=%d\n",joueurSel, objetSel, guiltSel);
+					goEnabled = 0;
 					if (guiltSel!=-1)
 					{
 						sprintf(sendBuffer,"G %d %d",gId, guiltSel);//ON DEMANDE POUR UN COUPABLE
@@ -302,7 +307,7 @@ int main(int argc, char ** argv)
 					}
 					else if ((objetSel!=-1) && (joueurSel!=-1))
 					{
-						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel,objetSel);//ON DEMANDE A UN JOUEUR COMBIEN IL A D'OBJET SEL
+						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel, objetSel);//ON DEMANDE A UN JOUEUR COMBIEN IL A D'OBJET SEL
 						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					// RAJOUTER DU CODE ICI
@@ -358,9 +363,18 @@ int main(int argc, char ** argv)
 			// Message 'V' : le joueur recoit une valeur de tableCartes
 			case 'V':
 				// RAJOUTER DU CODE ICI
-				sscanf(gbuffer, "V %d %d %d", &id, &objetSel, &nbObj);
-				tableCartes[id][objetSel] = nbObj;
+				sscanf(gbuffer, "V %d %d %d", &id, &obj, &nbObj);
+				tableCartes[id][obj] = nbObj;
 
+				break;
+
+			case 'W':
+				sscanf(gbuffer, "W %d", &winner);
+				sprintf(sendBuffer, "%s gagne la partie", gNames[winner]);
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
+                             "Partie terminee !",
+                             sendBuffer,
+                             window);
 				break;
 		}
 		synchro=0;
