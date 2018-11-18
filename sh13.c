@@ -28,6 +28,7 @@ int tableCartes[4][8];
 int b[3];
 int goEnabled;
 int connectEnabled;
+int nbObj;
 
 char *nbobjets[]={"5","5","5","5","4","3","3","3"};
 char *nbnoms[]={"Sebastian Moran", "irene Adler", "inspector Lestrade",
@@ -286,6 +287,7 @@ int main(int argc, char ** argv)
 					if (guiltSel!=-1)
 					{
 						sprintf(sendBuffer,"G %d %d",gId, guiltSel);//ON DEMANDE POUR UN COUPABLE
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					// RAJOUTER DU CODE ICI
 
@@ -293,6 +295,7 @@ int main(int argc, char ** argv)
 					else if ((objetSel!=-1) && (joueurSel==-1))
 					{
 						sprintf(sendBuffer,"O %d %d",gId, objetSel);//ON DEMANDE A TOUT LE MONDE QUI A OBJETSEL
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					// RAJOUTER DU CODE ICI
 
@@ -300,6 +303,7 @@ int main(int argc, char ** argv)
 					else if ((objetSel!=-1) && (joueurSel!=-1))
 					{
 						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel,objetSel);//ON DEMANDE A UN JOUEUR COMBIEN IL A D'OBJET SEL
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					// RAJOUTER DU CODE ICI
 
@@ -354,6 +358,8 @@ int main(int argc, char ** argv)
 			// Message 'V' : le joueur recoit une valeur de tableCartes
 			case 'V':
 				// RAJOUTER DU CODE ICI
+				sscanf(gbuffer, "V %d %d %d", &id, &objetSel, &nbObj);
+				tableCartes[id][objetSel] = nbObj;
 
 				break;
 		}

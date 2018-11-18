@@ -213,41 +213,42 @@ void broadcastMessage(char *mess)
 
 int main(int argc, char *argv[])
 {
-     int sockfd, newsockfd, portno;
-     socklen_t clilen;
-     char buffer[256];
-     struct sockaddr_in serv_addr, cli_addr;
-     int n;
-     int i;
-     int joueurSel;
-     int objetSel;
-     int guiltSel;
-     int winner = -1;
+    int sockfd, newsockfd, portno;
+    socklen_t clilen;
+    char buffer[256];
+    struct sockaddr_in serv_addr, cli_addr;
+    int n;
+    int i;
+    int joueurSel;
+    int objetSel;
+    int guiltSel;
+    int winner = -1;
 
-        char com;
-        char clientIpAddress[256], clientName[256];
-        int clientPort;
-        int id;
-        char reply[256];
+    char com;
+    char clientIpAddress[256], clientName[256];
+    int clientPort;
+    int id;
+    char reply[256];
 
 
-     if (argc < 2) {
-         fprintf(stderr,"ERROR, no port provided\n");
-         exit(1);
-     }
-     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-     if (sockfd < 0) 
+    if (argc < 2) {
+        fprintf(stderr,"ERROR, no port provided\n");
+        exit(1);
+    }
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) 
         error("ERROR opening socket");
-     bzero((char *) &serv_addr, sizeof(serv_addr));
-     portno = atoi(argv[1]);
-     serv_addr.sin_family = AF_INET;
-     serv_addr.sin_addr.s_addr = INADDR_ANY;
-     serv_addr.sin_port = htons(portno);
-     if (bind(sockfd, (struct sockaddr *) &serv_addr,
-              sizeof(serv_addr)) < 0) 
-              error("ERROR on binding");
-     listen(sockfd,5);
-     clilen = sizeof(cli_addr);
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    portno = atoi(argv[1]);
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(portno);
+    if (bind(sockfd, (struct sockaddr *) &serv_addr,
+                sizeof(serv_addr)) < 0) 
+            error("ERROR on binding");
+
+    listen(sockfd,5);
+    clilen = sizeof(cli_addr);
 
 	printDeck();
 	melangerDeck();
@@ -350,14 +351,22 @@ int main(int argc, char *argv[])
                 if(guiltSel == deck[12]){
                     winner = id;
                 }
+                else{
+                    //ELIMINER LE JOUEUR
+                }
 				break;
 
             case 'O':
 				// RAJOUTER DU CODE ICI
+                sscanf(buffer, "O %d %d", &id, &objetSel);
+
+
 				break;
 
 			case 'S':
 				// RAJOUTER DU CODE ICI
+                sscanf(buffer, "O %d %d %d", &id, &joueurSel, &objetSel);
+                sprintf(reply, "V %d %d %d", joueurSel, objetSel, tableCartes[joueurSel][objetSel]);
 				break;
             
             default:
