@@ -281,6 +281,9 @@ int main(int argc, char *argv[])
         printf("Received packet from %s:%d\nData: [%s]\n\n",
                 inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);
 
+
+        printf("Etape Serveur : %d\n", fsmServer);
+
         if (fsmServer==0)//debut de partie
         {
         	switch (buffer[0])
@@ -339,6 +342,8 @@ int main(int argc, char *argv[])
                     sprintf(reply, "M %d", joueurCourant);
                     broadcastMessage(reply);
 
+                    printf("Coupable : %d %s\n",deck[12],nomcartes[deck[12]]);
+
                                         fsmServer=1;
 				}
 				break;
@@ -353,13 +358,14 @@ int main(int argc, char *argv[])
                 if(guiltSel == deck[12]){
                     winner = id;
                     fsmServer = 2;
+                    //printf("Gagnant OK via case G\n");
                 }
                 else{
                     tabJoueurCourant[id] = 0;
                 }
 				break;
 
-            case 'O':
+            case 'O'://ON DEMANDE A TOUT LE MONDE S'IL A UN OBJET
 				// RAJOUTER DU CODE ICI
                 sscanf(buffer, "O %d %d", &id, &objetSel);
                 for(i = 0; i < 4; i++){
@@ -375,7 +381,7 @@ int main(int argc, char *argv[])
                 }
 				break;
 
-			case 'S':
+			case 'S'://ON DEMANDE A UNE PERSONNE LE NOMBRE D'ITEMS QU'IL A POUR UN OBJET
 				// RAJOUTER DU CODE ICI
                 sscanf(buffer, "S %d %d %d", &id, &joueurSel, &objetSel);
                 sprintf(reply, "V %d %d %d", joueurSel, objetSel, tableCartes[joueurSel][objetSel]);
@@ -400,9 +406,10 @@ int main(int argc, char *argv[])
         //Systeme de definition du joueur courant
         do{
             joueurCourant++;
-            if(joueurCourant > 3)
+            if(joueurCourant > 3)//PROBLEME
                 joueurCourant = 0;
         }while(tabJoueurCourant[joueurCourant] == 0);
+        printf("Joueur gagnant : %d\n", winner);
         printf("Joueur courant: %d\n", joueurCourant);
 
         if(fsmServer == 1){
@@ -410,7 +417,9 @@ int main(int argc, char *argv[])
             broadcastMessage(reply);
         }
         }
-        else if(fsmServer == 2){//fin de partie
+
+        /*else */if(fsmServer == 2){//fin de partie
+            printf("Annonce du gagnant : %d\n", winner);
             sprintf(reply, "W %d", winner);
             broadcastMessage(reply);
         }
