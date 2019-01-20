@@ -406,7 +406,7 @@ int main(int argc, char *argv[])
         //Systeme de definition du joueur courant
         do{
             joueurCourant++;
-            if(joueurCourant > 3)//PROBLEME
+            if(joueurCourant > 3)
                 joueurCourant = 0;
         }while(tabJoueurCourant[joueurCourant] == 0);
         printf("Joueur gagnant : %d\n", winner);
@@ -418,7 +418,7 @@ int main(int argc, char *argv[])
         }
         }
 
-        /*else */if(fsmServer == 2){//fin de partie
+        if(fsmServer == 2){//fin de partie
             printf("Annonce du gagnant : %d\n", winner);
             sprintf(reply, "W %d", winner);
             broadcastMessage(reply);
